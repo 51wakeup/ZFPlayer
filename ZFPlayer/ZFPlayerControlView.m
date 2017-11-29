@@ -34,7 +34,8 @@ static const CGFloat ZFPlayerAnimationTimeInterval             = 7.0f;
 static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 
 @interface ZFPlayerControlView () <UIGestureRecognizerDelegate>
-
+/** 邀请函 */
+@property (nonatomic, strong) UIButton                *invitationBtn;
 /** 标题 */
 @property (nonatomic, strong) UILabel                 *titleLabel;
 /** 开始播放按钮 */
@@ -178,6 +179,11 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         make.height.mas_equalTo(50);
     }];
     
+    [self.invitationBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-15);
+        make.centerY.equalTo(self.topImageView.mas_centerY);
+        make.height.mas_equalTo(30);
+    }];
     [self.backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(self.topImageView.mas_leading).offset(10);
         make.top.equalTo(self.topImageView.mas_top).offset(3);
@@ -387,7 +393,11 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         [self.delegate zf_controlView:self playAction:sender];
     }
 }
-
+- (void)invitationBtnClick:(UIButton *)sender {
+    if (self.invitationBlock) {
+        self.invitationBlock();
+    }
+}
 - (void)closeBtnClick:(UIButton *)sender {
     if ([self.delegate respondsToSelector:@selector(zf_controlView:closeAction:)]) {
         [self.delegate zf_controlView:self closeAction:sender];
@@ -484,6 +494,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
  */
 - (void)onDeviceOrientationChange {
     if (ZFPlayerShared.isLockScreen) { return; }
+    self.invitationBtn.hidden = self.isFullScreen;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
@@ -522,7 +533,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         make.leading.equalTo(self.topImageView.mas_leading).offset(10);
         make.width.height.mas_equalTo(40);
     }];
-
     if (self.isCellVideo) {
         [self.backBtn setImage:ZFPlayerImage(@"ZFPlayer_close") forState:UIControlStateNormal];
     }
@@ -535,9 +545,11 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     if (self.lockBtn.isSelected) {
         self.topImageView.alpha    = 0;
         self.bottomImageView.alpha = 0;
+        self.invitationBtn.alpha = 0;
     } else {
         self.topImageView.alpha    = 1;
         self.bottomImageView.alpha = 1;
+        self.invitationBtn.alpha = 1;
     }
     self.backgroundColor           = RGBA(0, 0, 0, 0.3);
     self.lockBtn.alpha             = 1;
@@ -553,6 +565,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.showing = NO;
     self.backgroundColor          = RGBA(0, 0, 0, 0);
     self.topImageView.alpha       = self.playeEnd;
+    self.invitationBtn.alpha = self.playeEnd;
     self.bottomImageView.alpha    = 0;
     self.lockBtn.alpha            = 0;
     self.bottomProgressView.alpha = 1;
@@ -653,12 +666,19 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     }
     return _lockBtn;
 }
-
+- (UIButton *)invitationBtn {
+    if(!_invitationBtn){
+        _invitationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_invitationBtn setImage:ZFPlayerImage(@"invitation") forState:UIControlStateNormal];
+        [_invitationBtn addTarget:self action:@selector(invitationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _invitationBtn;
+}
 - (UIButton *)startBtn {
     if (!_startBtn) {
         _startBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_startBtn setImage:ZFPlayerImage(@"ZFPlayer_play") forState:UIControlStateNormal];
-        [_startBtn setImage:ZFPlayerImage(@"ZFPlayer_pause") forState:UIControlStateSelected];
+        [_startBtn setImage:ZFPlayerImage(@"video_play") forState:UIControlStateNormal];
+        [_startBtn setImage:ZFPlayerImage(@"video_pause") forState:UIControlStateSelected];
         [_startBtn addTarget:self action:@selector(playBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _startBtn;
@@ -739,7 +759,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (UIButton *)fullScreenBtn {
     if (!_fullScreenBtn) {
         _fullScreenBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_fullScreenBtn setImage:ZFPlayerImage(@"ZFPlayer_fullscreen") forState:UIControlStateNormal];
+        [_fullScreenBtn setImage:ZFPlayerImage(@"video_enlarge") forState:UIControlStateNormal];
         [_fullScreenBtn setImage:ZFPlayerImage(@"ZFPlayer_shrinkscreen") forState:UIControlStateSelected];
         [_fullScreenBtn addTarget:self action:@selector(fullScreenBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -788,7 +808,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (UIButton *)playeBtn {
     if (!_playeBtn) {
         _playeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_playeBtn setImage:ZFPlayerImage(@"ZFPlayer_play_btn") forState:UIControlStateNormal];
+        [_playeBtn setImage:ZFPlayerImage(@"video_play") forState:UIControlStateNormal];
         [_playeBtn addTarget:self action:@selector(centerPlayBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _playeBtn;
