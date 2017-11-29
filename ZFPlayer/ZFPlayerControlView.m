@@ -123,6 +123,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         [self.bottomImageView addSubview:self.totalTimeLabel];
         
         [self.topImageView addSubview:self.downLoadBtn];
+        [self.topImageView addSubview:self.invitationBtn];
         [self addSubview:self.lockBtn];
         [self.topImageView addSubview:self.backBtn];
         [self addSubview:self.activity];
@@ -483,6 +484,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)playerPlayDidEnd {
     self.backgroundColor  = RGBA(0, 0, 0, .6);
     self.repeatBtn.hidden = NO;
+    self.invitationBtn.hidden = YES;
     // 初始化显示controlView为YES
     self.showing = NO;
     // 延迟隐藏controlView
@@ -513,6 +515,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.backBtn.hidden = NO;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
+    self.invitationBtn.hidden = YES;
     [self.backBtn setImage:ZFPlayerImage(@"ZFPlayer_back_full") forState:UIControlStateNormal];
     [self.backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.topImageView.mas_top).offset(23);
@@ -760,7 +763,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     if (!_fullScreenBtn) {
         _fullScreenBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_fullScreenBtn setImage:ZFPlayerImage(@"video_enlarge") forState:UIControlStateNormal];
-        [_fullScreenBtn setImage:ZFPlayerImage(@"ZFPlayer_shrinkscreen") forState:UIControlStateSelected];
+        [_fullScreenBtn setImage:ZFPlayerImage(@"icon_exit_fullscreen") forState:UIControlStateSelected];
         [_fullScreenBtn addTarget:self action:@selector(fullScreenBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _fullScreenBtn;
@@ -914,6 +917,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.failBtn.hidden              = YES;
     self.placeholderImageView.alpha  = 1;
     self.backBtn.hidden = YES;
+    self.invitationBtn.hidden = YES;
     [self hideControlView];
 }
 
@@ -1110,6 +1114,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 /** 播放完了 */
 - (void)zf_playerPlayEnd {
     self.repeatBtn.hidden = NO;
+    self.invitationBtn.hidden = YES;
     self.playeEnd         = YES;
     self.showing          = NO;
     // 隐藏controlView
