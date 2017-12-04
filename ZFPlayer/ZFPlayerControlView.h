@@ -28,4 +28,6 @@
 @interface ZFPlayerControlView : UIView
 typedef void(^BlockType) (void);
 @property(nonatomic,copy) BlockType invitationBlock;
+/** 全屏按钮 */
+@property (nonatomic, strong) UIButton                *fullScreenBtn;
 @end

@@ -48,8 +48,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 @property (nonatomic, strong) UIProgressView          *progressView;
 /** 滑杆 */
 @property (nonatomic, strong) ASValueTrackingSlider   *videoSlider;
-/** 全屏按钮 */
-@property (nonatomic, strong) UIButton                *fullScreenBtn;
+
 /** 锁定屏幕方向按钮 */
 @property (nonatomic, strong) UIButton                *lockBtn;
 /** 系统菊花 */
@@ -529,6 +528,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)setOrientationPortraitConstraint {
     self.fullScreen             = NO;
     self.backBtn.hidden = YES;
+    self.invitationBtn.hidden = NO;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
     [self.backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -548,11 +548,11 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     if (self.lockBtn.isSelected) {
         self.topImageView.alpha    = 0;
         self.bottomImageView.alpha = 0;
-        self.invitationBtn.alpha = 0;
+        //self.invitationBtn.alpha = 0;
     } else {
         self.topImageView.alpha    = 1;
         self.bottomImageView.alpha = 1;
-        self.invitationBtn.alpha = 1;
+        //self.invitationBtn.alpha = 1;
     }
     self.backgroundColor           = RGBA(0, 0, 0, 0.3);
     self.lockBtn.alpha             = 1;
@@ -568,7 +568,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.showing = NO;
     self.backgroundColor          = RGBA(0, 0, 0, 0);
     self.topImageView.alpha       = self.playeEnd;
-    self.invitationBtn.alpha = self.playeEnd;
+    //self.invitationBtn.alpha = self.playeEnd;
     self.bottomImageView.alpha    = 0;
     self.lockBtn.alpha            = 0;
     self.bottomProgressView.alpha = 1;
