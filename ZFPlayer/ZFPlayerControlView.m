@@ -483,7 +483,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)playerPlayDidEnd {
     self.backgroundColor  = RGBA(0, 0, 0, .6);
     self.repeatBtn.hidden = NO;
-    self.invitationBtn.hidden = YES;
     // 初始化显示controlView为YES
     self.showing = NO;
     // 延迟隐藏controlView
@@ -495,7 +494,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
  */
 - (void)onDeviceOrientationChange {
     if (ZFPlayerShared.isLockScreen) { return; }
-    self.invitationBtn.hidden = self.isFullScreen;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
@@ -514,7 +512,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.backBtn.hidden = NO;
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
-    self.invitationBtn.hidden = YES;
     [self.backBtn setImage:ZFPlayerImage(@"ZFPlayer_back_full") forState:UIControlStateNormal];
     [self.backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.topImageView.mas_top).offset(23);
@@ -528,7 +525,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)setOrientationPortraitConstraint {
     self.fullScreen             = NO;
     self.backBtn.hidden = YES;
-    self.invitationBtn.hidden = NO;
+    
     self.lockBtn.hidden         = !self.isFullScreen;
     self.fullScreenBtn.selected = self.isFullScreen;
     [self.backBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -548,11 +545,9 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     if (self.lockBtn.isSelected) {
         self.topImageView.alpha    = 0;
         self.bottomImageView.alpha = 0;
-        //self.invitationBtn.alpha = 0;
     } else {
         self.topImageView.alpha    = 1;
         self.bottomImageView.alpha = 1;
-        //self.invitationBtn.alpha = 1;
     }
     self.backgroundColor           = RGBA(0, 0, 0, 0.3);
     self.lockBtn.alpha             = 1;
@@ -568,7 +563,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.showing = NO;
     self.backgroundColor          = RGBA(0, 0, 0, 0);
     self.topImageView.alpha       = self.playeEnd;
-    //self.invitationBtn.alpha = self.playeEnd;
     self.bottomImageView.alpha    = 0;
     self.lockBtn.alpha            = 0;
     self.bottomProgressView.alpha = 1;
@@ -917,7 +911,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     self.failBtn.hidden              = YES;
     self.placeholderImageView.alpha  = 1;
     self.backBtn.hidden = YES;
-    self.invitationBtn.hidden = YES;
     [self hideControlView];
 }
 
@@ -1114,7 +1107,6 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 /** 播放完了 */
 - (void)zf_playerPlayEnd {
     self.repeatBtn.hidden = NO;
-    self.invitationBtn.hidden = YES;
     self.playeEnd         = YES;
     self.showing          = NO;
     // 隐藏controlView
