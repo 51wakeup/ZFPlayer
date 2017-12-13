@@ -122,7 +122,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         [self.bottomImageView addSubview:self.totalTimeLabel];
         
         [self.topImageView addSubview:self.downLoadBtn];
-        [self.topImageView addSubview:self.invitationBtn];
+        //[self.topImageView addSubview:self.invitationBtn];
         [self addSubview:self.lockBtn];
         [self.topImageView addSubview:self.backBtn];
         [self addSubview:self.activity];
@@ -179,11 +179,11 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         make.height.mas_equalTo(50);
     }];
     
-    [self.invitationBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-15);
-        make.centerY.equalTo(self.topImageView.mas_centerY);
-        make.height.mas_equalTo(30);
-    }];
+//    [self.invitationBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(-15);
+//        make.centerY.equalTo(self.topImageView.mas_centerY);
+//        make.height.mas_equalTo(30);
+//    }];
     [self.backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(self.topImageView.mas_leading).offset(10);
         make.top.equalTo(self.topImageView.mas_top).offset(3);
@@ -663,14 +663,14 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     }
     return _lockBtn;
 }
-- (UIButton *)invitationBtn {
-    if(!_invitationBtn){
-        _invitationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_invitationBtn setImage:ZFPlayerImage(@"invitation") forState:UIControlStateNormal];
-        [_invitationBtn addTarget:self action:@selector(invitationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _invitationBtn;
-}
+//- (UIButton *)invitationBtn {
+//    if(!_invitationBtn){
+//        _invitationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//        [_invitationBtn setImage:ZFPlayerImage(@"invitation") forState:UIControlStateNormal];
+//        [_invitationBtn addTarget:self action:@selector(invitationBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+//    }
+//    return _invitationBtn;
+//}
 - (UIButton *)startBtn {
     if (!_startBtn) {
         _startBtn = [UIButton buttonWithType:UIButtonTypeCustom];
