@@ -1031,7 +1031,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
     self.didEnterBackground     = YES;
     // 退到后台锁定屏幕方向
     ZFPlayerShared.isLockScreen = YES;
-    [_player pause];
+    if (!self.enterBackgroundPlayEnable) {
+        [_player pause];
+    }
+    
     self.state                  = ZFPlayerStatePause;
 }
 
