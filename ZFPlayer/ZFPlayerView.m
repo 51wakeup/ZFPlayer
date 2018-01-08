@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 @property (nonatomic, strong) AVPlayerLayer          *playerLayer;
 @property (nonatomic, strong) id                     timeObserve;
 /** 滑杆 */
-@property (nonatomic, strong) UISlider               *volumeViewSlider; 
+@property (nonatomic, strong) UISlider               *volumeViewSlider;
 /** 用来保存快进的总时长 */
 @property (nonatomic, assign) CGFloat                sumTime;
 /** 定义一个实例变量，保存枚举值 */
@@ -194,6 +194,12 @@ typedef NS_ENUM(NSInteger, PanDirection){
                                              selector:@selector(onStatusBarOrientationChange)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onAudioSessionEvent:)
+                                                 name:AVAudioSessionInterruptionNotification
+                                               object:nil];
+    
 }
 
 #pragma mark - layoutSubviews
@@ -420,7 +426,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     self.doubleTap.numberOfTouchesRequired = 1; //手指数
     self.doubleTap.numberOfTapsRequired    = 2;
     [self addGestureRecognizer:self.doubleTap];
-
+    
     // 解决点击当前view时候响应其他控件事件
     [self.singleTap setDelaysTouchesBegan:YES];
     [self.doubleTap setDelaysTouchesBegan:YES];
@@ -621,7 +627,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         return;
     }
     [[UIApplication sharedApplication].keyWindow addSubview:self];
-
+    
     if (CGPointEqualToPoint(self.shrinkRightBottomPoint, CGPointZero)) { // 没有初始值
         self.shrinkRightBottomPoint = CGPointMake(10, self.scrollView.contentInset.bottom+10);
     } else {
@@ -811,7 +817,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
                 if ([self.scrollView isKindOfClass:[UITableView class]]) {
                     UITableView *tableView = (UITableView *)self.scrollView;
                     [tableView scrollToRowAtIndexPath:self.indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
-
+                    
                 } else if ([self.scrollView isKindOfClass:[UICollectionView class]]) {
                     UICollectionView *collectionView = (UICollectionView *)self.scrollView;
                     [collectionView scrollToItemAtIndexPath:self.indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
@@ -890,7 +896,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         // 如果执行了play还是没有播放则说明还没有缓存好，则再次缓存一段时间
         isBuffering = NO;
         if (!self.playerItem.isPlaybackLikelyToKeepUp) { [self bufferingSomeSecond]; }
-       
+        
     });
 }
 
@@ -919,8 +925,8 @@ typedef NS_ENUM(NSInteger, PanDirection){
  */
 - (void)singleTapAction:(UIGestureRecognizer *)gesture {
     if ([gesture isKindOfClass:[NSNumber class]] && ![(id)gesture boolValue]) {
-         [self _fullScreenAction];
-         return;
+        [self _fullScreenAction];
+        return;
     }
     if (gesture.state == UIGestureRecognizerStateRecognized) {
         if (self.isBottomVideo && !self.isFullScreen) { [self _fullScreenAction]; }
@@ -970,12 +976,12 @@ typedef NS_ENUM(NSInteger, PanDirection){
         } else if (point.y > ScreenHeight - height/2) {
             point.y = ScreenHeight - height/2 - distance;
         }
-
+        
         [UIView animateWithDuration:0.5 animations:^{
             view.center = point;
             self.shrinkRightBottomPoint = CGPointMake(ScreenWidth - view.frame.origin.x - width, ScreenHeight - view.frame.origin.y - height);
         }];
-    
+        
     } else {
         view.center = point;
         self.shrinkRightBottomPoint = CGPointMake(ScreenWidth - view.frame.origin.x- view.frame.size.width, ScreenHeight - view.frame.origin.y-view.frame.size.height);
@@ -1035,8 +1041,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
         [_player pause];
         self.state = ZFPlayerStatePause;
     }
-    
-    
 }
 
 /**
@@ -1052,7 +1056,23 @@ typedef NS_ENUM(NSInteger, PanDirection){
         [self play];
     }
 }
-
+/**
+ *  中断监听
+ */
+- (void) onAudioSessionEvent: (NSNotification *) notification
+{
+    NSDictionary *info = notification.userInfo;
+    AVAudioSessionInterruptionType type = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        self.state  = ZFPlayerStatePause;
+        [self.controlView zf_playerPlayBtnState:NO];
+        [_player pause];
+    }else{
+        if (!self.isPauseByUser) {
+            [self play];
+        }
+    }
+}
 /**
  *  从xx秒开始播放视频跳转
  *
@@ -1232,11 +1252,11 @@ typedef NS_ENUM(NSInteger, PanDirection){
     if ([touch.view isKindOfClass:[UISlider class]]) {
         return NO;
     }
-
+    
     return YES;
 }
 
-#pragma mark - Setter 
+#pragma mark - Setter
 
 /**
  *  videoURL的setter方法
@@ -1285,7 +1305,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
  */
 - (void)setPlayerItem:(AVPlayerItem *)playerItem {
     if (_playerItem == playerItem) {return;}
-
+    
     if (_playerItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:_playerItem];
         [_playerItem removeObserver:self forKeyPath:@"status"];
@@ -1308,7 +1328,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 /**
  *  根据tableview的值来添加、移除观察者
  *
- *  @param tableView tableView 
+ *  @param tableView tableView
  */
 - (void)setScrollView:(UIScrollView *)scrollView {
     if (_scrollView == scrollView) { return; }
@@ -1369,14 +1389,14 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 - (void)setPlayerModel:(ZFPlayerModel *)playerModel {
     _playerModel = playerModel;
-
+    
     if (playerModel.seekTime) { self.seekTime = playerModel.seekTime; }
     [self.controlView zf_playerModel:playerModel];
     // 分辨率
     if (playerModel.resolutionDic) {
-       self.resolutionDic = playerModel.resolutionDic;
+        self.resolutionDic = playerModel.resolutionDic;
     }
-
+    
     if (playerModel.scrollView && playerModel.indexPath && playerModel.videoURL) {
         NSCAssert(playerModel.fatherViewTag, @"请指定playerViews所在的faterViewTag");
         [self cellVideoWithScrollView:playerModel.scrollView AtIndexPath:playerModel.indexPath];
@@ -1508,7 +1528,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 /** 加载失败按钮事件 */
 - (void)zf_controlView:(UIView *)controlView failAction:(UIButton *)sender {
-     [self configZFPlayer];
+    [self configZFPlayer];
 }
 
 - (void)zf_controlView:(UIView *)controlView resolutionAction:(UIButton *)sender {
@@ -1542,7 +1562,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
     [self.controlView zf_playerPlayBtnState:YES];
     [self seekToTime:dragedSeconds completionHandler:^(BOOL finished) {}];
-
+    
 }
 
 - (void)zf_controlView:(UIView *)controlView progressSliderValueChanged:(UISlider *)slider {
@@ -1561,10 +1581,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
         
         //计算出拖动的当前秒数
         CGFloat dragedSeconds = floorf(totalTime * slider.value);
-
+        
         //转换成CMTime才能给player来控制播放进度
         CMTime dragedCMTime   = CMTimeMake(dragedSeconds, 1);
-   
+        
         [controlView zf_playerDraggedTime:dragedSeconds totalTime:totalTime isForward:style hasPreview:self.isFullScreen ? self.hasPreviewView : NO];
         
         if (totalTime > 0) { // 当总时长 > 0时候才能拖动slider
@@ -1597,7 +1617,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         // 此时设置slider值为0
         slider.value = 0;
     }
-
+    
 }
 
 - (void)zf_controlView:(UIView *)controlView progressSliderTouchEnded:(UISlider *)slider {
@@ -1627,3 +1647,4 @@ typedef NS_ENUM(NSInteger, PanDirection){
 #pragma clang diagnostic pop
 
 @end
+
