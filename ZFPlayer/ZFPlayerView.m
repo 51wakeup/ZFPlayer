@@ -1033,9 +1033,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
     ZFPlayerShared.isLockScreen = YES;
     if (!self.enterBackgroundPlayEnable) {
         [_player pause];
+        self.state = ZFPlayerStatePause;
     }
     
-    self.state                  = ZFPlayerStatePause;
+    
 }
 
 /**

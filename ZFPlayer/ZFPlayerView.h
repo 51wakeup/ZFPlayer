@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, ZFPlayerState) {
 @property (nonatomic, assign) BOOL                    cellPlayerOnCenter;
 /** player在栈上，即此时push或者模态了新控制器 */
 @property (nonatomic, assign) BOOL                    playerPushedOrPresented;
-
+/** player进入后台,是否可以播放 */
 @property (nonatomic, assign) BOOL                    enterBackgroundPlayEnable;
 
 /**
